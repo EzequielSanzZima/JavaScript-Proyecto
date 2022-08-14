@@ -1,0 +1,98 @@
+body{
+    background-color: #979A9A;
+}
+
+/*Botones*/
+.filterLabel{
+  padding-right: 5px;
+}
+/*Cartas*/
+.card{
+  --bs-card-border-width: 0px;
+}
+.card-title{
+    font-size: 17px;
+}
+.background{
+  background: url(../img/otros/item_bg.png);
+  background-size:cover;
+}
+.separador{
+    height: 38px;
+    width: 2px;
+    border-right: 1px solid #e3e3e3;
+    margin: 0 20px 0 16px
+}
+
+.modal-container {
+  
+    display: flex;
+    align-items: center;
+    position: fixed; 
+    background-color: transparent;
+    width: 100%;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    border-radius: 10px ;
+    z-index: 100;
+    justify-content: flex-end;
+  } 
+  
+  /* hacer visible el modal  */
+  .modal-active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 5;
+    overflow: hidden;
+    position:absolute;
+  }
+  
+  .modal-carrito{
+    width: 30rem;
+    background-color: whitesmoke;
+  }
+  
+  
+  .productoEnCarrito {
+    border-left: 5px solid lightblue;
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+    margin: 5px 0;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .boton-eliminar {
+    background-color: white;
+    color: lightblue;
+    border: none;
+    font-size: 20px;
+  }
+
+  /*Caja de botones*/
+  .boxButton{
+    background-color: lightblue;
+  }
+
+
+
+
+  /*Seccion compra*/
+  .cajaTerminarCompra{
+    padding: 150px 0px 0px 580px;
+  }
+
+  .requiered{
+    color: red;
+  }
+  .cajaTextoFinalizarCompra{
+    width: 100%;
+  }
+
+  .asd{
+    margin-left: auto;
+  }
+  .asdd{
+    margin-left: 190px;
+  }
