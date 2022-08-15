@@ -132,6 +132,7 @@ let enviarOrdenados = document.getElementById('ordenComoUsuario');//        Orde
 const buscadorBarra = document.getElementById('buscarItemEnCartas');//      Buscador
 document.createElement('paginaTerminarCompra') // ------------------------> Boton iniciar compra
 const eliminarItemsTodoCarrito = document.getElementById('eliminarItemCarrito') // Boton Carrito Borrar Localstorage/carrito
+
 //-------------------------------------Funcion cartas por botones y buscador--------------------
 function renderizarCard (skinArray){
   productoContenedor.innerHTML = ''
@@ -335,11 +336,11 @@ userDisplay()
 let compraUsuarios = [{
 
 }]
-const terminarCompraFuncion = document.getElementById('formCompra');
+const terminarCompraFuncion = document.getElementById('terminarCompra');
 
 terminarCompraFuncion.addEventListener('click', ()=>{
   
-(carritoDeCompra.length === 0) && (Swal.fire({
+(carritoDeCompra.length === '') && (Swal.fire({
   icon: 'error',
   title: 'El carrito esta vacio.',
   text: 'Agrega mas item para continuar.',
@@ -349,11 +350,10 @@ if (carritoDeCompra.length >= 1){
   productoContenedor.innerHTML = ''
   seccionBotonesJS.innerHTML = ''
 
-
-  formCompra.innerHTML +=`
+  paginaTerminarCompra.innerHTML +=`
   <div class='container bg-white pt-2'> </a>
-    <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i>a</a>
-      <div class="pt-4 pb-5">
+    <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i></a>
+      <div class="pt-4 pb-4">
               <div class="container d-flex flex-column">
                 <div class="pt-3">
                   <div class="d-flex">
@@ -361,7 +361,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="nombreDelComprador" id="nombreDelComprador" placeholder="Tu nombre." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="nombreDelComprador" class='inputNombreComprador' placeholder="Tu nombre." class="cajaTextoFinalizarCompra">
                   </div>
                 </div>
                 <div class="pt-3">
@@ -370,7 +370,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="correoElectronicoDelComprador" id="correoElectronicoDelComprador" placeholder="ejemplo@mail.com" class="cajaTextoFinalizarCompra">
+                    <input type="text" name="correoElectronicoDelComprador" class="inputElecMain" placeholder="ejemplo@mail.com" class="cajaTextoFinalizarCompra">
                   </div>
                 </div>
                 <div class="pt-3">
@@ -379,7 +379,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="d-flex justify-content-center">
-                    <input type="text" name="otroMedioContaDelComprador" id="otroMedioContaDelComprador" placeholder="Tu instagram, twitter, etc." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="otroMedioContaDelComprador" id="inputOtroMedioCont" placeholder="Tu instagram, twitter, etc." class="cajaTextoFinalizarCompra">
                   </div>
                 </div>
                 <div class="pt-3">
@@ -389,7 +389,7 @@ if (carritoDeCompra.length >= 1){
                     <a href="https://www.steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" class="ps-2">(?)</a>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="compraUsuarioTradeLink" id="compraUsuarioTradeLink" placeholder="URL trade de steam." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam" placeholder="URL trade de steam." class="cajaTextoFinalizarCompra">
                   </div>
                 </div>
                 <div class="pt-3 text-center">
@@ -411,30 +411,63 @@ if (carritoDeCompra.length >= 1){
   //location.href="./compra.html";
 })
 
+
 function finalCompra(){
   const enviarCompra = document.getElementById('enviarCompra')
-  enviarCompra.addEventListener('click',()=>{
-    let nombreDelComprador = document.getElementById('nombreDelComprador').value;
-    let compraUsuarioTradeLink = document.getElementById('compraUsuarioTradeLink').value;
-    let correoElectronicoDelComprador =document.getElementById('correoElectronicoDelComprador').value;
-    let otroMedioContaDelComprador = document.getElementById('otroMedioContaDelComprador').value;
+  enviarCompra.addEventListener('click',(event)=>{
+    event.preventDefault();
+    
+    //----Finalizar Compra
+const nombreComprador = document.querySelector('.inputNombreComprador'),
+      otroMedioContaDelComprador = document.querySelector('.inputElecMain'),
+      correoElecComprador = document.querySelector('.inputOtroMedioCont'),
+      compraUsuarioTradeLink = document.querySelector('.inputURLSteam');
 
-  
-    if((compraUsuarioTradeLink == '')||(nombreDelComprador == '')||(otroMedioContaDelComprador == '')||(correoElectronicoDelComprador == '')){
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Rellena todos los campos para continuar',
-        backdrop: `rgba(255,255,255,.25)`
-    })
-    }else{
-      Swal.fire({
-        icon: 'success',
-        title: 'Gracias!',
-        text: 'En los proximos dias te llegara una notificacion!',
-        backdrop: `rgba(255,255,255,.25)`
-    })
-  }
+    const data= {
+      nombre: nombreComprador.value,
+      UserOtroMedio: otroMedioContaDelComprador.value,
+      //CorreoElectronico: correoElecComprador.value,
+      SteamURL: compraUsuarioTradeLink.value,
+    };
+
+
+    Swal.fire({
+      title: '¿Deseas guardar los datos de la tarjeta?',
+      showCancelButton: true,
+      position: 'center',
+      width: 400,
+      confirmButtonText: 'Guardar',
+  }).then((result)=>{
+      if(result.isConfirmed){
+          localStorage.setItem('data', JSON.stringify(data));
+          Swal.fire('Datos guardados', '', 'success');
+          setTimeout(() => {
+              location.reload();
+          }, 2000);
+      }else if(result.dismiss === Swal.DismissReason.cancel){
+          Swal.fire('Los datos no se guardaron', 'Le tenes miedo al éxito', 'error');
+          setTimeout(() => {
+              location.reload();
+          }, 2000);
+      }
+  })
+
+
+    // if((compraUsuarioTradeLink == '')||(nombreDelComprador == '')||(otroMedioContaDelComprador == '')||(correoElectronicoDelComprador == '')){
+    //   Swal.fire({
+    //     icon: 'error',
+    //     title: 'Error',
+    //     text: 'Rellena todos los campos para continuar',
+    //     backdrop: `rgba(255,255,255,.25)`
+    // })
+    // }else{
+    //   Swal.fire({
+    //     icon: 'success',
+    //     title: 'Gracias!',
+    //     text: 'En los proximos dias te llegara una notificacion!',
+    //     backdrop: `rgba(255,255,255,.25)`
+    // })
+  //}
  })
 }
 //----------------------------------------Carrito de compra al tirar F5 queda guardado--------------------------
