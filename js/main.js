@@ -56,7 +56,6 @@ const stockSkins = [
 const usuario = 
  {
   user: 'wasSd',
-  steam: 'asdasdd.com',
   photoProfile: "./img/usuario/usuario1.jpg"
  }
 
@@ -183,8 +182,6 @@ function botonCompra (skin){
     
   } )
 }
-
-
 //----------------------------------------Agregar al carrito + Carrito---------------------------------
 
 const carritoIndex = (productoId) =>{
@@ -208,14 +205,10 @@ const carritoIndex = (productoId) =>{
       contenedorCarrito.appendChild(div);
 //----------Eliminar todo el carrito
       eliminarItemsTodoCarrito.addEventListener('click', () =>{
-        // removeAllItemCart(producto);
-        if(carritoDeCompra.length === 0){
-          alert('El carrito esta vacio, no se puede vaciar.')
-        }else{
+        if(carritoDeCompra.length != 0){
           for(let i=0; i<carritoDeCompra.length; i++){                 //-----------AAAAAAAAAAAAAAAAAAAA
             localStorage.removeItem(producto.id)    
           }
-          
           Toastify({
             text: `Se eliminaron ${carritoDeCompra.length} items del carrito :(`,
             duration: 2500,
@@ -230,6 +223,20 @@ const carritoIndex = (productoId) =>{
             onClick: function(){} // Callback after click
           }).showToast();  
           contenedorCarrito.removeChild(div);
+        }else{
+          Toastify({
+            text: `El carrito esta vacio no se puede vaciar.`,
+            duration: 2500,
+            newWindow: true,
+            close: false,
+            gravity: "top", // `top` or `bottom`
+            position: "left", // `left`, `center` or `right`
+            stopOnFocus: false, // Prevents dismissing of toast on hover
+            style: {
+              background: "linear-gradient(to right, #5f0979, #00d4ff)",
+            },
+            onClick: function(){} // Callback after click
+          }).showToast();  
         }
       })
 //----------Eliminar un unico item del carrito
@@ -361,7 +368,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="nombreDelComprador" class='inputNombreComprador' placeholder="Tu nombre." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="nombreDelComprador" class='inputNombreComprador cajaTextoFinalizarCompra' placeholder="Tu nombre." >
                   </div>
                 </div>
                 <div class="pt-3">
@@ -370,7 +377,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="correoElectronicoDelComprador" class="inputElecMain" placeholder="ejemplo@mail.com" class="cajaTextoFinalizarCompra">
+                    <input type="text" name="correoElectronicoDelComprador" class="inputElecMain cajaTextoFinalizarCompra" placeholder="ejemplo@mail.com">
                   </div>
                 </div>
                 <div class="pt-3">
@@ -379,7 +386,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="d-flex justify-content-center">
-                    <input type="text" name="otroMedioContaDelComprador" id="inputOtroMedioCont" placeholder="Tu instagram, twitter, etc." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="otroMedioContaDelComprador" class="inputOtroMedioCont cajaTextoFinalizarCompra" placeholder="Tu instagram, twitter, etc." >
                   </div>
                 </div>
                 <div class="pt-3">
@@ -389,7 +396,7 @@ if (carritoDeCompra.length >= 1){
                     <a href="https://www.steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" class="ps-2">(?)</a>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam" placeholder="URL trade de steam." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam cajaTextoFinalizarCompra" placeholder="URL trade de steam.">
                   </div>
                 </div>
                 <div class="pt-3 text-center">
@@ -411,22 +418,22 @@ if (carritoDeCompra.length >= 1){
   //location.href="./compra.html";
 })
 
-
 function finalCompra(){
   const enviarCompra = document.getElementById('enviarCompra')
   enviarCompra.addEventListener('click',(event)=>{
     event.preventDefault();
     
     //----Finalizar Compra
-const nombreComprador = document.querySelector('.inputNombreComprador'),
-      otroMedioContaDelComprador = document.querySelector('.inputElecMain'),
-      correoElecComprador = document.querySelector('.inputOtroMedioCont'),
-      compraUsuarioTradeLink = document.querySelector('.inputURLSteam');
-
+    
+    const nombreComprador = document.querySelector('.inputNombreComprador'),
+          otroMedioContaDelComprador = document.querySelector('.inputElecMain'),
+          correoElecComprador = document.querySelector('.inputOtroMedioCont'),
+          compraUsuarioTradeLink = document.querySelector('.inputURLSteam');
+    
     const data= {
       nombre: nombreComprador.value,
       UserOtroMedio: otroMedioContaDelComprador.value,
-      //CorreoElectronico: correoElecComprador.value,
+      CorreoElectronico: correoElecComprador.value,
       SteamURL: compraUsuarioTradeLink.value,
     };
 
@@ -445,29 +452,12 @@ const nombreComprador = document.querySelector('.inputNombreComprador'),
               location.reload();
           }, 2000);
       }else if(result.dismiss === Swal.DismissReason.cancel){
-          Swal.fire('Los datos no se guardaron', 'Le tenes miedo al éxito', 'error');
+          Swal.fire('Los datos no se guardaron', 'error');
           setTimeout(() => {
               location.reload();
           }, 2000);
       }
   })
-
-
-    // if((compraUsuarioTradeLink == '')||(nombreDelComprador == '')||(otroMedioContaDelComprador == '')||(correoElectronicoDelComprador == '')){
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title: 'Error',
-    //     text: 'Rellena todos los campos para continuar',
-    //     backdrop: `rgba(255,255,255,.25)`
-    // })
-    // }else{
-    //   Swal.fire({
-    //     icon: 'success',
-    //     title: 'Gracias!',
-    //     text: 'En los proximos dias te llegara una notificacion!',
-    //     backdrop: `rgba(255,255,255,.25)`
-    // })
-  //}
  })
 }
 //----------------------------------------Carrito de compra al tirar F5 queda guardado--------------------------
