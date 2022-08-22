@@ -27,12 +27,11 @@ const usuario =
   photoProfile: "./img/usuario/usuario1.jpg"
  }
 let carrito = JSON.parse(localStorage.getItem("producto")) || [];
-//const carrito = [] //Array donde se guardan item carrito
 const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
 //----------------------------------Funcion Cargar Fetch--------------------------
 (async()=>{
   try{
-    const response = await fetch("../js/product.json")
+    const response = await fetch("../js/stock/product.json")
     const data = await response.json();
     localStorage.setItem("stock", JSON.stringify(data))
   } catch (error){
