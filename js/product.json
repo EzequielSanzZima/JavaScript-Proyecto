@@ -1,0 +1,89 @@
+[{
+  "id": 0,
+  "weapon": "AK-47",
+  "name":"Frontside Misty",
+  "price": "1238",
+  "condition": "Casi Nuevo",
+  "image": "./img/stock/front.png"
+},{
+  "id": 1,
+  "weapon": "AWP",
+  "name":"Dragon Lore",
+  "price": "30000",
+  "condition": "Recien Fabricado",
+  "image": "./img/stock/dragonlore.png"
+},{
+  "id": 2,
+  "weapon": "Karambit",
+  "name":"Stained",
+  "price": "2458",
+  "condition": "Bastante Degastado",
+  "image": "./img/stock/stained.png"
+},{
+  "id": 3,
+  "weapon": "Agente",
+  "name":"Number-K",
+  "price": "1700",
+  "condition": "No disponible",
+  "image": "./img/stock/agentek.png"
+},{
+  "id": 4,
+  "weapon": "M4A4",
+  "name":"Griffer",
+  "price": "1230",
+  "condition": "Recien Fabricado",
+  "image": "./img/stock/griffin.png"
+},{
+  "id": 5,
+  "weapon": "Agente",
+  "name":"Sargento Bombson",
+  "price": "20",
+  "condition": "No disponible",
+  "image": "./img/stock/bomb.png"
+},{
+  "id": 6,
+  "weapon": "Agente",
+  "name":"Sir Loudmouth Darryl",
+  "price": "1786",
+  "condition": "No disponible",
+  "image": "./img/stock/Darryl.png"
+},{
+  "id": 7,
+  "weapon": "AK-47",
+  "name":"Leet Museo",
+  "price": "1500",
+  "condition": "Casi Nuevo",
+  "image": "./img/stock/leetmuseo.png"
+},{
+  "id": 8,
+  "weapon": "Five-Seven",
+  "name":"Boost Protocol",
+  "price": "550",
+  "condition": "Recien Fabricado",
+  "image": "./img/stock/boostprotocol.png"
+},{
+  "id": 9,
+  "weapon": "Stiletto",
+  "name":"Blue Steel",
+  "price": "200",
+  "condition": "Deplorable",
+  "image": "./img/stock/bluesteel.png"
+},{
+  "id": 10,
+  "weapon": "USP-S",
+  "name":"Whiteout",
+  "price": "250",
+  "condition": "Bastante Degastado",
+  "image": "./img/stock/whiteout.png"
+},{
+  "id": 11,
+  "weapon": "P2000",
+  "name":"Corticera",
+  "price": "75",
+  "condition": "Bastante Degastado",
+  "image": "./img/stock/corticera.png"
+}
+]
+
+
+

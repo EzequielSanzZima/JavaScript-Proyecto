@@ -19,49 +19,35 @@ modalContenedor.addEventListener('click',() =>{
 
 modalCarrito.addEventListener('click', (e) =>{
     e.stopPropagation();
-})
+});
 //------------------------Variables Globales-------------------------------------------------
-
-class Skins {
-  constructor(id, arma, nombre, precio, estado, imagen, clases) {
-    this.id = id;
-    this.arma = arma;
-    this.nombre = nombre;
-    this.precio = parseFloat(precio);
-    this.estado = estado;
-    this.imagen = imagen;
-    this.clases = clases;
-  }
-  comision() {
-    this.precio = this.precio * 1.41;
-  }
-}
-
-const stockSkins = [
-  new Skins(0,"AK-47",'Frontside Misty', "1238" , "Casi Nuevo","./img/stock/front.png", 'armaG'),
-  new Skins(1,"AWP","Dragon Lore", "30000" , "Recien Fabricado", "./img/stock/dragonlore.png", 'armaG'),
-  new Skins(2,"Karambit","Stained", "2458" , "Bastante Degastado","./img/stock/stained.png", 'armaG'),
-  new Skins(3,"Agente","Number-K", "1700","No Disponible","./img/stock/agentek.png", 'agente'),
-  new Skins(4,"M4A4","Griffer", "1230","Recien Fabricado", "./img/stock/griffin.png", 'armaG'),
-  new Skins(5,"Agente","Sargento Bombson","20","No disponible","./img/stock/bomb.png", 'agente'),
-  new Skins(6,"Agente","Sir Loudmouth Darryl","1786", "No Disponible","./img/stock/Darryl.png", 'agente'),
-  new Skins(7,"AK-47","Leet Museo","1500","Casi Nuevo","./img/stock/leetmuseo.png", 'armaG'),
-  new Skins(8,"Five-Seven","Boost Protocol","550","Recien Fabricado","./img/stock/boostprotocol.png", 'chiquito'),
-  new Skins(9,"Stiletto","Blue Steel","2000","Deplorable","./img/stock/bluesteel.png", 'armaG'),
-  new Skins(10,"USP-S","Whiteout","250","Bastante degastado","./img/stock/whiteout.png", 'armaG'),
-  new Skins(11,"P200","Corticera","75","Bastante degastado","./img/stock/corticera.png", 'chiquito')
-]
-
-
+// let cart = JSON.parse(localStorage.getItem("Carrito")) || [];
 const usuario = 
  {
   user: 'wasSd',
   photoProfile: "./img/usuario/usuario1.jpg"
  }
-
-
-const carritoDeCompra = [] //Array donde se guardan item carrito
+let carrito = JSON.parse(localStorage.getItem("producto")) || [];
+//const carrito = [] //Array donde se guardan item carrito
 const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
+//----------------------------------Funcion Cargar Fetch--------------------------
+(async()=>{
+  try{
+    const response = await fetch("../js/product.json")
+    const data = await response.json();
+    localStorage.setItem("stock", JSON.stringify(data))
+    crearCartas(data)
+  } catch (error){
+    swal.fire({
+      title: '¡ERROR!',
+      text: 'Algo salió mal. Inténtalo de nuevo más tarde',
+      icon: 'error',
+      confirm: 'Ok',
+      timer: 5000
+  })
+ }
+})()
+let stockSkins = JSON.parse(localStorage.getItem("stock"))
 //----------------------------------Crear botones------------------------------------------//
 const seccionBotonesJS = document.getElementById('botones')
 verBotones = () => {
@@ -94,37 +80,37 @@ verBotones = () => {
 }
 verBotones();
 
-//--------------------------------Tarjeta al iniciar la pagina
+// //--------------------------------Tarjeta al iniciar la pagina
 const contenedorProductos = document.getElementById('productoContenedor') //-----------------> Tarjeta de inicio al cargar la pagina
-const mostrarProductos = (stockSkins) => {
-  stockSkins.forEach(skin => {
-      const div = document.createElement('div');
-      div.classList.add('col-12','col-md-6','col-lg-4','col-xl-3');
-      div.innerHTML += `
-        <div class="card shadow " style="width: 17rem">
-          <div class='background'>
-            <img src="${skin.imagen}" class="card-img-top ${skin.clases}" alt="${skin.nombre}"/>
+function crearCartas(){
+
+  for (const skin of stockSkins) {
+    const div = document.createElement('div');
+    div.classList.add('col-12','col-md-6','col-lg-4','col-xl-3');
+    div.innerHTML += `
+      <div class="card shadow " style="width: 17rem">
+        <div class='background'>
+          <img src="${skin.image}" class="card-img-top" alt="${skin.name}"/>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">${skin.weapon} | ${skin.name}</h5>
+          <div class="d-flex justify-content-between">
+            <p class="card-text pb-2">${skin.condition}</p>
+            
           </div>
-          <div class="card-body">
-            <h5 class="card-title">${skin.arma} | ${skin.nombre}</h5>
-            <div class="d-flex justify-content-between">
-              <p class="card-text pb-2">${skin.estado}</p>
-              
-            </div>
-            <div class="d-flex justify-content-between align-content-center">
-              <a href="#" class="btn btn-primary" id=boton${skin.id}>Comprar</a>
-              <p class="m-0 d-flex align-items-center">$${skin.precio}</p>
-            </div>
+          <div class="d-flex justify-content-between align-content-center">
+            <a href="#" class="btn btn-primary" id=boton${skin.id}>Comprar</a>
+            <p class="m-0 d-flex align-items-center">$${skin.price}</p>
           </div>
         </div>
-       </div>
-                      `
-      contenedorProductos.appendChild(div)
-      botonCompra(skin);
-  })
-}
-
-mostrarProductos(stockSkins);
+      </div>
+     </div>
+                    `
+    contenedorProductos.appendChild(div)
+    botonCompra(skin);
+  }
+ };
+ 
 //------------------------------------DOM---------------------------------------------------
 const reiniciar = document.getElementById('verItemSinOrden') //             Boton Reset
 let enviarOrdenados = document.getElementById('ordenComoUsuario');//        Ordena Como quiere el usuario
@@ -141,16 +127,16 @@ function renderizarCard (skinArray){
         div.innerHTML += `
           <div class="card shadow " style="width: 17rem">
           <div class='background'>
-          <img src="${skin.imagen}" class="card-img-top" alt="${skin.nombre} "/>
+          <img src="${skin.image}" class="card-img-top" alt="${skin.name} "/>
         </div>
             <div class="card-body">
-              <h5 class="card-title">${skin.arma} | ${skin.nombre}</h5>
+              <h5 class="card-title">${skin.weapon} | ${skin.name}</h5>
               <div class="d-flex justify-content-between">
-                <p class="card-text pb-2">${skin.estado}</p>
+                <p class="card-text pb-2">${skin.condition}</p>
               </div>
               <div class="d-flex justify-content-between buttonD">
                 <a href="#" class="btn btn-primary" id=boton${skin.id}>Comprar</a>
-                <p class="m-0 d-flex align-items-baseline">$${skin.precio}</p>
+                <p class="m-0 d-flex align-items-baseline">$${skin.price}</p>
               </div>
             </div>
           </div>
@@ -179,7 +165,6 @@ function botonCompra (skin){
     }).showToast();
 
     carritoIndex(skin.id)
-    
   } )
 }
 //----------------------------------------Agregar al carrito + Carrito---------------------------------
@@ -189,28 +174,32 @@ const carritoIndex = (productoId) =>{
   
 
   const renderCarritoProductos = () => {
+
     let producto = stockSkins.find(elemento => elemento.id == productoId);
-      carritoDeCompra.push(producto);
+      carrito.push(producto);
       //stockSkins.splice(producto.id, 1);
       guardarLocal(producto.id, JSON.stringify(producto))
 
       renderizarCard(stockSkins)
       let div = document.createElement('div')
       div.classList.add('productoEnCarrito')
-      div.innerHTML +=` <p><img src='${producto.imagen}' width=40px height=40px class='mt-3'>
-                        <p class="m-0 mt-3">${producto.arma} | ${producto.nombre}</p>
-                        <p class="m-0 mt-3">Precio: ${producto.precio}</p> 
+      div.innerHTML +=` <p><img src='${producto.image}' width=40px height=40px class='mt-3'>
+                        <p class="m-0 mt-3">${producto.weapon} | ${producto.name}</p>
+                        <p class="m-0 mt-3">Precio: ${producto.price}</p> 
                         <i class="fa-solid fa-trash-can"id=eliminar${producto.id}></i>
                         `;       
       contenedorCarrito.appendChild(div);
+
+
 //----------Eliminar todo el carrito
       eliminarItemsTodoCarrito.addEventListener('click', () =>{
-        if(carritoDeCompra.length != 0){
-          for(let i=0; i<carritoDeCompra.length; i++){                 //-----------AAAAAAAAAAAAAAAAAAAA
+        if(carrito.length != 0){
+          for(let i=0; i<carrito.length; i++){                
             localStorage.removeItem(producto.id)    
           }
           Toastify({
-            text: `Se eliminaron ${carritoDeCompra.length} items del carrito :(`,
+            text: `Se eliminaron ${carrito.length} items del carrito :(.
+              Se va a recargar la pagina.`,
             duration: 2500,
             newWindow: true,
             close: false,
@@ -222,8 +211,12 @@ const carritoIndex = (productoId) =>{
             },
             onClick: function(){} // Callback after click
           }).showToast();  
-          contenedorCarrito.removeChild(div);
-        }else{
+          //contenedorCarrito.removeChild(div);
+          setTimeout(()=> {
+            location.reload();
+        }, 1500)
+        
+        }if(carrito.length==0){
           Toastify({
             text: `El carrito esta vacio no se puede vaciar.`,
             duration: 2500,
@@ -261,14 +254,15 @@ const carritoIndex = (productoId) =>{
   }
       renderCarritoProductos()
 }
+
 //--------------------------Consulta usuario mayor menor etc-----------------------------------//
-enviarOrdenados.addEventListener('click',orden) //-------> AZ-ZA-Mayor a menor-Menor a mayor Botones Y Filtro de Agente o arma
+enviarOrdenados.addEventListener('click',orden()) //-------> AZ-ZA-Mayor a menor-Menor a mayor Botones Y Filtro de Agente o arma
 function orden(){
   const arrayObjetoOrdenados = stockSkins.slice(0);
   if(document.getElementById('AZ').checked){
     let objetoOrdenado = arrayObjetoOrdenados.sort((a, b) => //Muestra de A-Z
         a.arma.localeCompare(b.arma));
-
+        console.log('asd')
         renderizarCard(objetoOrdenado);
 
       }else if(document.getElementById('ZA').checked){
@@ -307,19 +301,18 @@ function orden(){
 
 //--------------------------------Boton Reinicia---------------------------------------------
 
-reiniciar.addEventListener('click', ()=>{
+reiniciar.addEventListener('click', ()=>{  //-----Reinicia las cartas a como estaban cuando entras
   renderizarCard(stockSkins);
 })
-
 //------------------------Buscador-------------------------------------
 
 function buscadorUsuario() {
 
   let buscadorUsuario = buscadorBarra.value;
-  let buscador = stockSkins.filter((nombre) => nombre.arma == buscadorUsuario);
+  let buscador = stockSkins.filter((nombre) => nombre.weapon == buscadorUsuario);
   
   renderizarCard(buscador)
-  buscadorUsuario == '' && renderizarCard(stockSkins)
+  buscadorUsuario == '' && renderizarCard(stockSkins) //--Si no tiene nada se reinicia
   
 }
 buscadorBarra.addEventListener('input', buscadorUsuario) //----------> Buscador
@@ -347,13 +340,13 @@ const terminarCompraFuncion = document.getElementById('terminarCompra');
 
 terminarCompraFuncion.addEventListener('click', ()=>{
   
-(carritoDeCompra.length === '') && (Swal.fire({
+(carrito.length === '') && (Swal.fire({
   icon: 'error',
   title: 'El carrito esta vacio.',
   text: 'Agrega mas item para continuar.',
 }))
 
-if (carritoDeCompra.length >= 1){
+if (carrito.length >= 1){
   productoContenedor.innerHTML = ''
   seccionBotonesJS.innerHTML = ''
 
