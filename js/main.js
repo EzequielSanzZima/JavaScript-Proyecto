@@ -21,7 +21,6 @@ modalCarrito.addEventListener('click', (e) =>{
     e.stopPropagation();
 });
 //------------------------Variables Globales-------------------------------------------------
-// let cart = JSON.parse(localStorage.getItem("Carrito")) || [];
 const usuario = 
  {
   user: 'wasSd',
@@ -36,7 +35,6 @@ const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
     const response = await fetch("../js/product.json")
     const data = await response.json();
     localStorage.setItem("stock", JSON.stringify(data))
-    crearCartas(data)
   } catch (error){
     swal.fire({
       title: '¡ERROR!',
@@ -110,6 +108,7 @@ function crearCartas(){
     botonCompra(skin);
   }
  };
+ crearCartas()
  
 //------------------------------------DOM---------------------------------------------------
 const reiniciar = document.getElementById('verItemSinOrden') //             Boton Reset
@@ -151,7 +150,7 @@ function botonCompra (skin){
   const boton = document.getElementById(`boton${skin.id}`);
   boton.addEventListener('click', ()=>{
     Toastify({
-      text: `Se agrego ${skin.arma} | ${skin.nombre} al carrito `,
+      text: `Se agrego ${skin.weapon} | ${skin.name} al carrito `,
       duration: 2500,
       newWindow: true,
       close: true,
@@ -184,9 +183,10 @@ const carritoIndex = (productoId) =>{
       let div = document.createElement('div')
       div.classList.add('productoEnCarrito')
       div.innerHTML +=` <p><img src='${producto.image}' width=40px height=40px class='mt-3'>
-                        <p class="m-0 mt-3">${producto.weapon} | ${producto.name}</p>
-                        <p class="m-0 mt-3">Precio: ${producto.price}</p> 
-                        <i class="fa-solid fa-trash-can"id=eliminar${producto.id}></i>
+                        <p class="m-0 d-flex align-items-center">${producto.weapon} | ${producto.name}</p>
+                        <p class="m-0 d-flex align-items-center">Precio: ${producto.price}</p> 
+                        <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${producto.id}></i>
+                        <hr>
                         `;       
       contenedorCarrito.appendChild(div);
 
@@ -237,7 +237,7 @@ const carritoIndex = (productoId) =>{
       eliminarTachoCarrito.addEventListener('click',()=>{
         localStorage.removeItem(producto.id)
           Toastify({
-            text: `Se elimino ${producto.arma} | ${producto.nombre} del carrito `,
+            text: `Se elimino ${producto.weapon} | ${producto.name} del carrito `,
             duration: 2500,
             newWindow: true,
             close: false,
@@ -256,38 +256,37 @@ const carritoIndex = (productoId) =>{
 }
 
 //--------------------------Consulta usuario mayor menor etc-----------------------------------//
-enviarOrdenados.addEventListener('click',orden()) //-------> AZ-ZA-Mayor a menor-Menor a mayor Botones Y Filtro de Agente o arma
-function orden(){
+enviarOrdenados.addEventListener('click',()=>{
   const arrayObjetoOrdenados = stockSkins.slice(0);
   if(document.getElementById('AZ').checked){
     let objetoOrdenado = arrayObjetoOrdenados.sort((a, b) => //Muestra de A-Z
-        a.arma.localeCompare(b.arma));
-        console.log('asd')
+        a.weapon.localeCompare(b.weapon));
+
         renderizarCard(objetoOrdenado);
 
       }else if(document.getElementById('ZA').checked){
         let objetoOrdenado = arrayObjetoOrdenados.sort((a, b) =>//Muestra de Z-A
-          b.arma.localeCompare(a.arma));
+          b.weapon.localeCompare(a.weapon));
 
           renderizarCard(objetoOrdenado);
 
       }else if(document.getElementById('manorAMayor').checked){
         let objetoOrdenado = arrayObjetoOrdenados.sort(         //Muestra de menor a mayor de precio
-          (a, b) => a.precio - b.precio);
+          (a, b) => a.price - b.price);
 
           renderizarCard(objetoOrdenado);
 
       }else if(document.getElementById('mayorAMenor').checked){
         let objetoOrdenado = arrayObjetoOrdenados.sort(          //Muestra en Mayor a menor de precio
-         (a, b) => b.precio - a.precio);
+         (a, b) => b.price - a.price);
 
          renderizarCard(objetoOrdenado);
 
       } else if (document.getElementById('radioMuestraArma').checked) {
-        let filtro = stockSkins.filter((nombre) => nombre.arma !== "Agente");  // Muestra solo tipo de arma
+        let filtro = stockSkins.filter((name) => name.weapon !== "Agente");  // Muestra solo tipo de arma
         renderizarCard(filtro);
       } else if (document.getElementById('radioMuestraAgente').checked) {
-        let filtro = stockSkins.filter((nombre) => nombre.arma == "Agente");  //Muestra solo los agentes
+        let filtro = stockSkins.filter((name) => name.weapon == "Agente");  //Muestra solo los agentes
         renderizarCard(filtro);
       } else{
         Swal.fire({
@@ -297,8 +296,7 @@ function orden(){
           backdrop: `rgba(255,255,255,.25)`
         })
       }
-};
-
+})
 //--------------------------------Boton Reinicia---------------------------------------------
 
 reiniciar.addEventListener('click', ()=>{  //-----Reinicia las cartas a como estaban cuando entras
@@ -339,72 +337,76 @@ let compraUsuarios = [{
 const terminarCompraFuncion = document.getElementById('terminarCompra');
 
 terminarCompraFuncion.addEventListener('click', ()=>{
-  
-(carrito.length === '') && (Swal.fire({
+(carrito.length == 0) && (Swal.fire({
   icon: 'error',
   title: 'El carrito esta vacio.',
   text: 'Agrega mas item para continuar.',
 }))
+(carrito.length != 0) && (Swal.fire({
+  icon: 'aSD',
+  title: 'El carrito esta vacio.',
+  text: 'Agrega mas item para continuar.',
+}))
 
-if (carrito.length >= 1){
-  productoContenedor.innerHTML = ''
-  seccionBotonesJS.innerHTML = ''
+// if (carrito.length >= 1){
+//   productoContenedor.innerHTML = ''
+//   seccionBotonesJS.innerHTML = ''
 
-  paginaTerminarCompra.innerHTML +=`
-  <div class='container bg-white pt-2'> </a>
-    <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i></a>
-      <div class="pt-4 pb-4">
-              <div class="container d-flex flex-column">
-                <div class="pt-3">
-                  <div class="d-flex">
-                    <p class="m-0 pe-2">Tu nombre:</p>
-                    <span class="requiered">*</span>
-                  </div>
-                  <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="nombreDelComprador" class='inputNombreComprador cajaTextoFinalizarCompra' placeholder="Tu nombre." >
-                  </div>
-                </div>
-                <div class="pt-3">
-                  <div class="d-flex">
-                    <p class="m-0 pe-2">Correo Electronico: </p>
-                    <span class="requiered">*</span>
-                  </div>
-                  <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="correoElectronicoDelComprador" class="inputElecMain cajaTextoFinalizarCompra" placeholder="ejemplo@mail.com">
-                  </div>
-                </div>
-                <div class="pt-3">
-                  <div class="d-flex">
-                    <p class="m-0  pe-2">Otro medio de contacto: </p>
-                    <span class="requiered">*</span>
-                  </div>
-                  <div class="d-flex justify-content-center">
-                    <input type="text" name="otroMedioContaDelComprador" class="inputOtroMedioCont cajaTextoFinalizarCompra" placeholder="Tu instagram, twitter, etc." >
-                  </div>
-                </div>
-                <div class="pt-3">
-                  <div class="d-flex">
-                    <p class="m-0 pe-2">Trade URL:</p>
-                    <span class="requiered">*</span>
-                    <a href="https://www.steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" class="ps-2">(?)</a>
-                  </div>
-                  <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam cajaTextoFinalizarCompra" placeholder="URL trade de steam.">
-                  </div>
-                </div>
-                <div class="pt-3 text-center">
-                  <button type="button" class="btn btn-primary" id='enviarCompra'>enviar</button>
-                </div>
-              </div> 
-          </div>
-      </div>
-    </div>
-  </div>
-  `;
+//   paginaTerminarCompra.innerHTML +=`
+//   <div class='container bg-white pt-2'> </a>
+//     <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i></a>
+//       <div class="pt-4 pb-4">
+//               <div class="container d-flex flex-column">
+//                 <div class="pt-3">
+//                   <div class="d-flex">
+//                     <p class="m-0 pe-2">Tu nombre:</p>
+//                     <span class="requiered">*</span>
+//                   </div>
+//                   <div class="pt-1 d-flex justify-content-center">
+//                     <input type="text" name="nombreDelComprador" class='inputNombreComprador cajaTextoFinalizarCompra' placeholder="Tu nombre." >
+//                   </div>
+//                 </div>
+//                 <div class="pt-3">
+//                   <div class="d-flex">
+//                     <p class="m-0 pe-2">Correo Electronico: </p>
+//                     <span class="requiered">*</span>
+//                   </div>
+//                   <div class="pt-1 d-flex justify-content-center">
+//                     <input type="text" name="correoElectronicoDelComprador" class="inputElecMain cajaTextoFinalizarCompra" placeholder="ejemplo@mail.com">
+//                   </div>
+//                 </div>
+//                 <div class="pt-3">
+//                   <div class="d-flex">
+//                     <p class="m-0  pe-2">Otro medio de contacto: </p>
+//                     <span class="requiered">*</span>
+//                   </div>
+//                   <div class="d-flex justify-content-center">
+//                     <input type="text" name="otroMedioContaDelComprador" class="inputOtroMedioCont cajaTextoFinalizarCompra" placeholder="Tu instagram, twitter, etc." >
+//                   </div>
+//                 </div>
+//                 <div class="pt-3">
+//                   <div class="d-flex">
+//                     <p class="m-0 pe-2">Trade URL:</p>
+//                     <span class="requiered">*</span>
+//                     <a href="https://www.steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" class="ps-2">(?)</a>
+//                   </div>
+//                   <div class="pt-1 d-flex justify-content-center">
+//                     <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam cajaTextoFinalizarCompra" placeholder="URL trade de steam.">
+//                   </div>
+//                 </div>
+//                 <div class="pt-3 text-center">
+//                   <button type="button" class="btn btn-primary" id='enviarCompra'>enviar</button>
+//                 </div>
+//               </div> 
+//           </div>
+//       </div>
+//     </div>
+//   </div>
+//   `;
 
-  cerrarCarrito.click();
-  finalCompra()
- }
+//   cerrarCarrito.click();
+//   finalCompra()
+//  }
 // (carritoDeCompra.length >= 1) && 
 // cerrarCarrito.click();
   
