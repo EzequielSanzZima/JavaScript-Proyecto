@@ -31,12 +31,12 @@ const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
 //----------------------------------Funcion Cargar Fetch--------------------------
 (async()=>{
   try{
-    const response = await fetch("../js/stock/product.json")
+    const response = await fetch("product.json")
     const data = await response.json();
     localStorage.setItem("stock", JSON.stringify(data))
   } catch (error){
     swal.fire({
-      title: '¡ERROR!',
+      title: '¡ERROR 404!',
       text: 'Algo salió mal. Inténtalo de nuevo más tarde',
       icon: 'error',
       confirm: 'Ok',
