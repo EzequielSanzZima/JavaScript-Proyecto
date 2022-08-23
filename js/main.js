@@ -26,7 +26,7 @@ const usuario =
   user: 'wasSd',
   photoProfile: "./img/usuario/usuario1.jpg"
  }
-let carrito = JSON.parse(localStorage.getItem("producto")) || [];
+let carrito = JSON.parse(localStorage.getItem("stockSkins")) || [];
 const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
 //----------------------------------Funcion Cargar Fetch--------------------------
 (async()=>{
@@ -116,6 +116,7 @@ const buscadorBarra = document.getElementById('buscarItemEnCartas');//      Busc
 document.createElement('paginaTerminarCompra') // ------------------------> Boton iniciar compra
 const eliminarItemsTodoCarrito = document.getElementById('eliminarItemCarrito') // Boton Carrito Borrar Localstorage/carrito
 
+
 //-------------------------------------Funcion cartas por botones y buscador--------------------
 function renderizarCard (skinArray){
   productoContenedor.innerHTML = ''
@@ -147,6 +148,7 @@ function renderizarCard (skinArray){
 //------------------------------------Funcion de compra con los botones-----------------------
 function botonCompra (skin){
   const boton = document.getElementById(`boton${skin.id}`);
+  
   boton.addEventListener('click', ()=>{
     Toastify({
       text: `Se agrego ${skin.weapon} | ${skin.name} al carrito `,
@@ -159,18 +161,14 @@ function botonCompra (skin){
       style: {
         background: "linear-gradient(to right, #5f0979, #00d4ff)",
       },
-      onClick: function(){} 
+      onClick: function(){}
     }).showToast();
-
     carritoIndex(skin.id)
   } )
 }
 //----------------------------------------Agregar al carrito + Carrito---------------------------------
 
 const carritoIndex = (productoId) =>{
-  const contenedorCarrito = document.getElementById('carrito-contenedor');
-  
-
   const renderCarritoProductos = () => {
 
     let producto = stockSkins.find(elemento => elemento.id == productoId);
@@ -179,42 +177,44 @@ const carritoIndex = (productoId) =>{
       guardarLocal(producto.id, JSON.stringify(producto))
 
       renderizarCard(stockSkins)
+
+//Muestra item en el modal del carrito
+      const contenedorCarrito = document.getElementById('carrito-contenedor');
       let div = document.createElement('div')
       div.classList.add('productoEnCarrito')
-      div.innerHTML +=` <p><img src='${producto.image}' width=40px height=40px class='mt-3'>
-                        <p class="m-0 d-flex align-items-center">${producto.weapon} | ${producto.name}</p>
-                        <p class="m-0 d-flex align-items-center">Precio: ${producto.price}</p> 
-                        <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${producto.id}></i>
-                        <hr>
-                        `;       
-      contenedorCarrito.appendChild(div);
-
+        div.innerHTML +=` <p><img src='${producto.image}' width=40px height=40px class='mt-3'>
+                          <p class="m-0 d-flex align-items-center">${producto.weapon} | ${producto.name}</p>
+                          <p class="m-0 d-flex align-items-center">Precio: ${producto.price}</p> 
+                          <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${producto.id}></i>
+        `;      
+        contenedorCarrito.appendChild(div);
+        document.getElementById('mostrarPrecio');
+        let totalPrice = 0;
+        carrito.forEach((skin) => {
+            totalPrice += parseFloat(skin.price);
+        });  
+        mostrarPrecio.innerHTML = ` 
+        <div class="text-dark h5 text-left mx-3">Valor total: 
+            <span class="text-success" id="sidecart-total">$${totalPrice}</span>
+        </div>`
 
 //----------Eliminar todo el carrito
       eliminarItemsTodoCarrito.addEventListener('click', () =>{
-        if(carrito.length != 0){
+        if(carrito.length != 1){
           for(let i=0; i<carrito.length; i++){                
             localStorage.removeItem(producto.id)    
           }
-          Toastify({
-            text: `Se eliminaron ${carrito.length} items del carrito :(.
-              Se va a recargar la pagina.`,
-            duration: 2500,
-            newWindow: true,
-            close: false,
-            gravity: "top", 
-            position: "left", 
-            stopOnFocus: false,
-            style: {
-              background: "linear-gradient(to right, #5f0979, #00d4ff)",
-            },
-            onClick: function(){} 
-          }).showToast();  
-          setTimeout(()=> {
-            location.reload();
-        }, 1500)
-        
-        }if(carrito.length==0){
+          Swal.fire({
+            icon: 'success',
+            title: 'Se han removido los item, se va a refrescar la pagina.',
+            showConfirmButton: false,
+            timer: 2450
+          })
+          setTimeout(function(){
+            window.location.reload();
+         }, 2500);  
+        }
+        (carrito.length==1)&&
           Toastify({
             text: `El carrito esta vacio no se puede vaciar.`,
             duration: 2500,
@@ -227,9 +227,9 @@ const carritoIndex = (productoId) =>{
               background: "linear-gradient(to right, #5f0979, #00d4ff)",
             },
             onClick: function(){}
-          }).showToast();  
-        }
-      })
+          }).showToast();
+        })
+      
 //----------Eliminar un unico item del carrito
     const eliminarTachoCarrito = document.getElementById(`eliminar${producto.id}`); //---------------------->Elimina unico item carrito
       eliminarTachoCarrito.addEventListener('click',()=>{
@@ -245,13 +245,21 @@ const carritoIndex = (productoId) =>{
             style: {
               background: "linear-gradient(to right, #5f0979, #00d4ff)",
             },
-            onClick: function(){} // Callback after click
+            onClick: function(){}
           }).showToast();
           contenedorCarrito.removeChild(div);
-      })
-  }
+      }) 
+  } 
+
       renderCarritoProductos()
+      //renderTotalPrice()
+
 }
+
+function showPrice(){
+
+}
+
 
 //--------------------------Consulta usuario mayor menor etc-----------------------------------//
 enviarOrdenados.addEventListener('click',()=>{
@@ -335,18 +343,13 @@ let compraUsuarios = [{
 const terminarCompraFuncion = document.getElementById('terminarCompra');
 
 terminarCompraFuncion.addEventListener('click', ()=>{
-(carrito.length == 0) && (Swal.fire({
+(carrito.length == 1) && (Swal.fire({
   icon: 'error',
   title: 'El carrito esta vacio.',
   text: 'Agrega mas item para continuar.',
 }))
-(carrito.length != 0) && (Swal.fire({
-  icon: 'aSD',
-  title: 'El carrito esta vacio.',
-  text: 'Agrega mas item para continuar.',
-}))
 
-if (carrito.length >= 1){
+if (carrito.length >= 2){
   productoContenedor.innerHTML = ''
   seccionBotonesJS.innerHTML = ''
 
@@ -405,10 +408,10 @@ if (carrito.length >= 1){
   cerrarCarrito.click();
   finalCompra()
  }
-(carritoDeCompra.length >= 1) && 
+(carrito.length >= 1) && 
 cerrarCarrito.click();
   
-  location.href="./compra.html";
+  //location.href="./compra.html";
 })
 
 function finalCompra(){
@@ -423,14 +426,21 @@ function finalCompra(){
           correoElecComprador = document.querySelector('.inputOtroMedioCont'),
           compraUsuarioTradeLink = document.querySelector('.inputURLSteam');
     
-    const data= {
+    const compraUser= {
       nombre: nombreComprador.value,
       UserOtroMedio: otroMedioContaDelComprador.value,
       CorreoElectronico: correoElecComprador.value,
       SteamURL: compraUsuarioTradeLink.value,
     };
 
-
+    if((compraUsuarioTradeLink == '')||(nombreComprador == '')||(otroMedioContaDelComprador == '')||(correoElecComprador == '')){
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Rellena todos los campos para continuar',
+        backdrop: `rgba(255,255,255,.25)`
+    })
+  }else{
     Swal.fire({
       title: '¿Deseas guardar los datos de la tarjeta?',
       showCancelButton: true,
@@ -439,18 +449,21 @@ function finalCompra(){
       confirmButtonText: 'Guardar',
   }).then((result)=>{
       if(result.isConfirmed){
-          localStorage.setItem('data', JSON.stringify(data));
+          localStorage.setItem('compraUser', JSON.stringify(compraUser));
           Swal.fire('Datos guardados', '', 'success');
           setTimeout(() => {
               location.reload();
           }, 2000);
       }else if(result.dismiss === Swal.DismissReason.cancel){
-          Swal.fire('Los datos no se guardaron', 'error');
+          Swal.fire('Los datos no se guardaron');
           setTimeout(() => {
               location.reload();
           }, 2000);
       }
   })
+  }
+
+
  })
 }
 //----------------------------------------Carrito de compra al tirar F5 queda guardado--------------------------
