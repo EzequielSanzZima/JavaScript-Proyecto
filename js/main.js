@@ -153,13 +153,13 @@ function botonCompra (skin){
       duration: 2500,
       newWindow: true,
       close: true,
-      gravity: "bottom", // `top` or `bottom`
-      position: "left", // `left`, `center` or `right`
-      stopOnFocus: false, // Prevents dismissing of toast on hover
+      gravity: "bottom",
+      position: "left", 
+      stopOnFocus: false,
       style: {
         background: "linear-gradient(to right, #5f0979, #00d4ff)",
       },
-      onClick: function(){} // Callback after click
+      onClick: function(){} 
     }).showToast();
 
     carritoIndex(skin.id)
@@ -202,15 +202,14 @@ const carritoIndex = (productoId) =>{
             duration: 2500,
             newWindow: true,
             close: false,
-            gravity: "top", // `top` or `bottom`
-            position: "left", // `left`, `center` or `right`
-            stopOnFocus: false, // Prevents dismissing of toast on hover
+            gravity: "top", 
+            position: "left", 
+            stopOnFocus: false,
             style: {
               background: "linear-gradient(to right, #5f0979, #00d4ff)",
             },
-            onClick: function(){} // Callback after click
+            onClick: function(){} 
           }).showToast();  
-          //contenedorCarrito.removeChild(div);
           setTimeout(()=> {
             location.reload();
         }, 1500)
@@ -221,13 +220,13 @@ const carritoIndex = (productoId) =>{
             duration: 2500,
             newWindow: true,
             close: false,
-            gravity: "top", // `top` or `bottom`
-            position: "left", // `left`, `center` or `right`
-            stopOnFocus: false, // Prevents dismissing of toast on hover
+            gravity: "top", 
+            position: "left", 
+            stopOnFocus: false, 
             style: {
               background: "linear-gradient(to right, #5f0979, #00d4ff)",
             },
-            onClick: function(){} // Callback after click
+            onClick: function(){}
           }).showToast();  
         }
       })
@@ -240,9 +239,9 @@ const carritoIndex = (productoId) =>{
             duration: 2500,
             newWindow: true,
             close: false,
-            gravity: "top", // `top` or `bottom`
-            position: "left", // `left`, `center` or `right`
-            stopOnFocus: false, // Prevents dismissing of toast on hover
+            gravity: "top",
+            position: "left", 
+            stopOnFocus: false, 
             style: {
               background: "linear-gradient(to right, #5f0979, #00d4ff)",
             },
@@ -347,69 +346,69 @@ terminarCompraFuncion.addEventListener('click', ()=>{
   text: 'Agrega mas item para continuar.',
 }))
 
-// if (carrito.length >= 1){
-//   productoContenedor.innerHTML = ''
-//   seccionBotonesJS.innerHTML = ''
+if (carrito.length >= 1){
+  productoContenedor.innerHTML = ''
+  seccionBotonesJS.innerHTML = ''
 
-//   paginaTerminarCompra.innerHTML +=`
-//   <div class='container bg-white pt-2'> </a>
-//     <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i></a>
-//       <div class="pt-4 pb-4">
-//               <div class="container d-flex flex-column">
-//                 <div class="pt-3">
-//                   <div class="d-flex">
-//                     <p class="m-0 pe-2">Tu nombre:</p>
-//                     <span class="requiered">*</span>
-//                   </div>
-//                   <div class="pt-1 d-flex justify-content-center">
-//                     <input type="text" name="nombreDelComprador" class='inputNombreComprador cajaTextoFinalizarCompra' placeholder="Tu nombre." >
-//                   </div>
-//                 </div>
-//                 <div class="pt-3">
-//                   <div class="d-flex">
-//                     <p class="m-0 pe-2">Correo Electronico: </p>
-//                     <span class="requiered">*</span>
-//                   </div>
-//                   <div class="pt-1 d-flex justify-content-center">
-//                     <input type="text" name="correoElectronicoDelComprador" class="inputElecMain cajaTextoFinalizarCompra" placeholder="ejemplo@mail.com">
-//                   </div>
-//                 </div>
-//                 <div class="pt-3">
-//                   <div class="d-flex">
-//                     <p class="m-0  pe-2">Otro medio de contacto: </p>
-//                     <span class="requiered">*</span>
-//                   </div>
-//                   <div class="d-flex justify-content-center">
-//                     <input type="text" name="otroMedioContaDelComprador" class="inputOtroMedioCont cajaTextoFinalizarCompra" placeholder="Tu instagram, twitter, etc." >
-//                   </div>
-//                 </div>
-//                 <div class="pt-3">
-//                   <div class="d-flex">
-//                     <p class="m-0 pe-2">Trade URL:</p>
-//                     <span class="requiered">*</span>
-//                     <a href="https://www.steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" class="ps-2">(?)</a>
-//                   </div>
-//                   <div class="pt-1 d-flex justify-content-center">
-//                     <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam cajaTextoFinalizarCompra" placeholder="URL trade de steam.">
-//                   </div>
-//                 </div>
-//                 <div class="pt-3 text-center">
-//                   <button type="button" class="btn btn-primary" id='enviarCompra'>enviar</button>
-//                 </div>
-//               </div> 
-//           </div>
-//       </div>
-//     </div>
-//   </div>
-//   `;
+  paginaTerminarCompra.innerHTML +=`
+  <div class='container bg-white pt-2'> </a>
+    <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i></a>
+      <div class="pt-4 pb-4">
+              <div class="container d-flex flex-column">
+                <div class="pt-3">
+                  <div class="d-flex">
+                    <p class="m-0 pe-2">Tu nombre:</p>
+                    <span class="requiered">*</span>
+                  </div>
+                  <div class="pt-1 d-flex justify-content-center">
+                    <input type="text" name="nombreDelComprador" class='inputNombreComprador cajaTextoFinalizarCompra' placeholder="Tu nombre." >
+                  </div>
+                </div>
+                <div class="pt-3">
+                  <div class="d-flex">
+                    <p class="m-0 pe-2">Correo Electronico: </p>
+                    <span class="requiered">*</span>
+                  </div>
+                  <div class="pt-1 d-flex justify-content-center">
+                    <input type="text" name="correoElectronicoDelComprador" class="inputElecMain cajaTextoFinalizarCompra" placeholder="ejemplo@mail.com">
+                  </div>
+                </div>
+                <div class="pt-3">
+                  <div class="d-flex">
+                    <p class="m-0  pe-2">Otro medio de contacto: </p>
+                    <span class="requiered">*</span>
+                  </div>
+                  <div class="d-flex justify-content-center">
+                    <input type="text" name="otroMedioContaDelComprador" class="inputOtroMedioCont cajaTextoFinalizarCompra" placeholder="Tu instagram, twitter, etc." >
+                  </div>
+                </div>
+                <div class="pt-3">
+                  <div class="d-flex">
+                    <p class="m-0 pe-2">Trade URL:</p>
+                    <span class="requiered">*</span>
+                    <a href="https://www.steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" class="ps-2">(?)</a>
+                  </div>
+                  <div class="pt-1 d-flex justify-content-center">
+                    <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam cajaTextoFinalizarCompra" placeholder="URL trade de steam.">
+                  </div>
+                </div>
+                <div class="pt-3 text-center">
+                  <button type="button" class="btn btn-primary" id='enviarCompra'>enviar</button>
+                </div>
+              </div> 
+          </div>
+      </div>
+    </div>
+  </div>
+  `;
 
-//   cerrarCarrito.click();
-//   finalCompra()
-//  }
-// (carritoDeCompra.length >= 1) && 
-// cerrarCarrito.click();
+  cerrarCarrito.click();
+  finalCompra()
+ }
+(carritoDeCompra.length >= 1) && 
+cerrarCarrito.click();
   
-  //location.href="./compra.html";
+  location.href="./compra.html";
 })
 
 function finalCompra(){
