@@ -19,50 +19,38 @@ modalContenedor.addEventListener('click',() =>{
 
 modalCarrito.addEventListener('click', (e) =>{
     e.stopPropagation();
-})
+});
 //------------------------Variables Globales-------------------------------------------------
-
-class Skins {
-  constructor(id, arma, nombre, precio, estado, imagen, clases) {
-    this.id = id;
-    this.arma = arma;
-    this.nombre = nombre;
-    this.precio = parseFloat(precio);
-    this.estado = estado;
-    this.imagen = imagen;
-    this.clases = clases;
-  }
-  comision() {
-    this.precio = this.precio * 1.41;
-  }
-}
-
-const stockSkins = [
-  new Skins(0,"AK-47",'Frontside Misty', "1238" , "Casi Nuevo","./img/stock/front.png", 'armaG'),
-  new Skins(1,"AWP","Dragon Lore", "30000" , "Recien Fabricado", "./img/stock/dragonlore.png", 'armaG'),
-  new Skins(2,"Karambit","Stained", "2458" , "Bastante Degastado","./img/stock/stained.png", 'armaG'),
-  new Skins(3,"Agente","Number-K", "1700","No Disponible","./img/stock/agentek.png", 'agente'),
-  new Skins(4,"M4A4","Griffer", "1230","Recien Fabricado", "./img/stock/griffin.png", 'armaG'),
-  new Skins(5,"Agente","Sargento Bombson","20","No disponible","./img/stock/bomb.png", 'agente'),
-  new Skins(6,"Agente","Sir Loudmouth Darryl","1786", "No Disponible","./img/stock/Darryl.png", 'agente'),
-  new Skins(7,"AK-47","Leet Museo","1500","Casi Nuevo","./img/stock/leetmuseo.png", 'armaG'),
-  new Skins(8,"Five-Seven","Boost Protocol","550","Recien Fabricado","./img/stock/boostprotocol.png", 'chiquito'),
-  new Skins(9,"Stiletto","Blue Steel","2000","Deplorable","./img/stock/bluesteel.png", 'armaG'),
-  new Skins(10,"USP-S","Whiteout","250","Bastante degastado","./img/stock/whiteout.png", 'armaG'),
-  new Skins(11,"P200","Corticera","75","Bastante degastado","./img/stock/corticera.png", 'chiquito')
-]
-
-
 const usuario = 
  {
   user: 'wasSd',
-  steam: 'asdasdd.com',
   photoProfile: "./img/usuario/usuario1.jpg"
  }
-
-
-const carritoDeCompra = [] //Array donde se guardan item carrito
+//----------------------LocalStorage------------------------------
+let carrito = JSON.parse(localStorage.getItem("Carrito")) || [];
 const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
+
+renderizarCarrito();
+//----------------------------------Funcion Cargar Fetch--------------------------
+
+(async()=>{
+  try{
+    const response = await fetch("product.json")
+    const data = await response.json();
+    localStorage.setItem("stock", JSON.stringify(data))
+    renderPrecio();
+  } catch (error){
+    swal.fire({
+      title: '¡ERROR!',
+      text: 'Algo salió mal. Inténtalo de nuevo más tarde',
+      icon: 'error',
+      confirm: 'Ok',
+      timer: 5000
+  })
+ }
+})()
+
+let stockSkins = JSON.parse(localStorage.getItem("stock")) //----------------> pasa de JSON a array en js
 //----------------------------------Crear botones------------------------------------------//
 const seccionBotonesJS = document.getElementById('botones')
 verBotones = () => {
@@ -95,43 +83,46 @@ verBotones = () => {
 }
 verBotones();
 
-//--------------------------------Tarjeta al iniciar la pagina
+// //--------------------------------Tarjeta al iniciar la pagina
 const contenedorProductos = document.getElementById('productoContenedor') //-----------------> Tarjeta de inicio al cargar la pagina
-const mostrarProductos = (stockSkins) => {
-  stockSkins.forEach(skin => {
-      const div = document.createElement('div');
-      div.classList.add('col-12','col-md-6','col-lg-4','col-xl-3');
-      div.innerHTML += `
-        <div class="card shadow " style="width: 17rem">
-          <div class='background'>
-            <img src="${skin.imagen}" class="card-img-top ${skin.clases}" alt="${skin.nombre}"/>
+function crearCartas(){
+
+  for (const skin of stockSkins) {
+    const div = document.createElement('div');
+    div.classList.add('col-12','col-md-6','col-lg-4','col-xl-3');
+    div.innerHTML += `
+      <div class="card shadow " style="width: 17rem">
+        <div class='background'>
+          <img src="${skin.image}" class="card-img-top" alt="${skin.name}"/>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">${skin.weapon} | ${skin.name}</h5>
+          <div class="d-flex justify-content-between">
+            <p class="card-text pb-2">${skin.condition}</p>
+            
           </div>
-          <div class="card-body">
-            <h5 class="card-title">${skin.arma} | ${skin.nombre}</h5>
-            <div class="d-flex justify-content-between">
-              <p class="card-text pb-2">${skin.estado}</p>
-              
-            </div>
-            <div class="d-flex justify-content-between align-content-center">
-              <a href="#" class="btn btn-primary" id=boton${skin.id}>Comprar</a>
-              <p class="m-0 d-flex align-items-center">$${skin.precio}</p>
-            </div>
+          <div class="d-flex justify-content-between align-content-center">
+            <a href="#" class="btn btn-primary" id=boton${skin.id}>Comprar</a>
+            <p class="m-0 d-flex align-items-center">$${skin.price}</p>
           </div>
         </div>
-       </div>
-                      `
-      contenedorProductos.appendChild(div)
-      botonCompra(skin);
-  })
-}
-
-mostrarProductos(stockSkins);
+      </div>
+     </div>
+                    `
+    contenedorProductos.appendChild(div)
+    botonCompra(skin);
+  }
+ };
+ crearCartas()
+ 
 //------------------------------------DOM---------------------------------------------------
 const reiniciar = document.getElementById('verItemSinOrden') //             Boton Reset
 let enviarOrdenados = document.getElementById('ordenComoUsuario');//        Ordena Como quiere el usuario
 const buscadorBarra = document.getElementById('buscarItemEnCartas');//      Buscador
 document.createElement('paginaTerminarCompra') // ------------------------> Boton iniciar compra
 const eliminarItemsTodoCarrito = document.getElementById('eliminarItemCarrito') // Boton Carrito Borrar Localstorage/carrito
+
+
 //-------------------------------------Funcion cartas por botones y buscador--------------------
 function renderizarCard (skinArray){
   productoContenedor.innerHTML = ''
@@ -141,16 +132,16 @@ function renderizarCard (skinArray){
         div.innerHTML += `
           <div class="card shadow " style="width: 17rem">
           <div class='background'>
-          <img src="${skin.imagen}" class="card-img-top" alt="${skin.nombre} "/>
+          <img src="${skin.image}" class="card-img-top" alt="${skin.name} "/>
         </div>
             <div class="card-body">
-              <h5 class="card-title">${skin.arma} | ${skin.nombre}</h5>
+              <h5 class="card-title">${skin.weapon} | ${skin.name}</h5>
               <div class="d-flex justify-content-between">
-                <p class="card-text pb-2">${skin.estado}</p>
+                <p class="card-text pb-2">${skin.condition}</p>
               </div>
               <div class="d-flex justify-content-between buttonD">
                 <a href="#" class="btn btn-primary" id=boton${skin.id}>Comprar</a>
-                <p class="m-0 d-flex align-items-baseline">$${skin.precio}</p>
+                <p class="m-0 d-flex align-items-baseline">$${skin.price}</p>
               </div>
             </div>
           </div>
@@ -160,132 +151,178 @@ function renderizarCard (skinArray){
         botonCompra(skin);
     })
 }
+
 //------------------------------------Funcion de compra con los botones-----------------------
 function botonCompra (skin){
   const boton = document.getElementById(`boton${skin.id}`);
+  
   boton.addEventListener('click', ()=>{
     Toastify({
-      text: `Se agrego ${skin.arma} | ${skin.nombre} al carrito `,
+      text: `Se agrego ${skin.weapon} | ${skin.name} al carrito `,
       duration: 2500,
       newWindow: true,
       close: true,
-      gravity: "bottom", // `top` or `bottom`
-      position: "left", // `left`, `center` or `right`
-      stopOnFocus: false, // Prevents dismissing of toast on hover
+      gravity: "bottom",
+      position: "left", 
+      stopOnFocus: false,
       style: {
         background: "linear-gradient(to right, #5f0979, #00d4ff)",
       },
-      onClick: function(){} // Callback after click
+      onClick: function(){}
     }).showToast();
-
-    carritoIndex(skin.id)
-    
+    renderCarritoProductos(skin.id)
   } )
 }
-
-
 //----------------------------------------Agregar al carrito + Carrito---------------------------------
 
-const carritoIndex = (productoId) =>{
-  const contenedorCarrito = document.getElementById('carrito-contenedor');
-  
+// const carritoIndex = (productoId) =>{ 
+//       renderCarritoProductos()
+// }
+const renderCarritoProductos = (productoId) => {
 
-  const renderCarritoProductos = () => {
-    let producto = stockSkins.find(elemento => elemento.id == productoId);
-      carritoDeCompra.push(producto);
-      //stockSkins.splice(producto.id, 1);
-      guardarLocal(producto.id, JSON.stringify(producto))
+  let producto = stockSkins.find(elemento => elemento.id == productoId);
+    carrito.push(producto);
+    localStorage.setItem("Carrito", JSON.stringify(carrito));
 
-      renderizarCard(stockSkins)
-      let div = document.createElement('div')
-      div.classList.add('productoEnCarrito')
-      div.innerHTML +=` <p><img src='${producto.imagen}' width=40px height=40px class='mt-3'>
-                        <p class="m-0 mt-3">${producto.arma} | ${producto.nombre}</p>
-                        <p class="m-0 mt-3">Precio: ${producto.precio}</p> 
-                        <i class="fa-solid fa-trash-can"id=eliminar${producto.id}></i>
-                        `;       
+    renderizarCard(stockSkins)
+
+//Muestra item en el modal del carrito
+    const contenedorCarrito = document.getElementById('carrito-contenedor');
+    let div = document.createElement('div')
+    div.classList.add('productoEnCarrito')
+    div.classList.add(`eliminar${producto.id}`)
+      div.innerHTML +=` <p><img src='${producto.image}' width=40px height=40px class='mt-3'>
+                        <p class="m-0 d-flex align-items-center">${producto.weapon} | ${producto.name}</p>
+                        <p class="m-0 d-flex align-items-center">Precio: ${producto.price}</p> 
+                        <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${producto.id}></i>
+      `;      
       contenedorCarrito.appendChild(div);
+
+//Muestra precio
+renderPrecio()
+
 //----------Eliminar todo el carrito
-      eliminarItemsTodoCarrito.addEventListener('click', () =>{
-        // removeAllItemCart(producto);
-        if(carritoDeCompra.length === 0){
-          alert('El carrito esta vacio, no se puede vaciar.')
-        }else{
-          for(let i=0; i<carritoDeCompra.length; i++){                 //-----------AAAAAAAAAAAAAAAAAAAA
-            localStorage.removeItem(producto.id)    
-          }
-          
-          Toastify({
-            text: `Se eliminaron ${carritoDeCompra.length} items del carrito :(`,
-            duration: 2500,
-            newWindow: true,
-            close: false,
-            gravity: "top", // `top` or `bottom`
-            position: "left", // `left`, `center` or `right`
-            stopOnFocus: false, // Prevents dismissing of toast on hover
-            style: {
-              background: "linear-gradient(to right, #5f0979, #00d4ff)",
-            },
-            onClick: function(){} // Callback after click
-          }).showToast();  
-          contenedorCarrito.removeChild(div);
-        }
-      })
-//----------Eliminar un unico item del carrito
-    const eliminarTachoCarrito = document.getElementById(`eliminar${producto.id}`); //---------------------->Elimina unico item carrito
-      eliminarTachoCarrito.addEventListener('click',()=>{
-        localStorage.removeItem(producto.id)
-          Toastify({
-            text: `Se elimino ${producto.arma} | ${producto.nombre} del carrito `,
-            duration: 2500,
-            newWindow: true,
-            close: false,
-            gravity: "top", // `top` or `bottom`
-            position: "left", // `left`, `center` or `right`
-            stopOnFocus: false, // Prevents dismissing of toast on hover
-            style: {
-              background: "linear-gradient(to right, #5f0979, #00d4ff)",
-            },
-            onClick: function(){} // Callback after click
-          }).showToast();
-          contenedorCarrito.removeChild(div);
-      })
-  }
-      renderCarritoProductos()
+    eliminarItemsTodoCarrito.addEventListener('click', () =>{
+      if(carrito.length > 0){              
+          localStorage.removeItem('Carrito')   
+        Swal.fire({
+          icon: 'success',
+          title: 'Se han removido los item, se va a refrescar la pagina.',
+          showConfirmButton: false,
+          timer: 2450
+        })
+        setTimeout(function(){
+          window.location.reload();
+       }, 2500);  
+      }else{
+        console.log('asd')
+        Toastify({
+          text: `El carrito esta vacio no se puede vaciar.`,
+          duration: 2500,
+          newWindow: true,
+          close: false,
+          gravity: "top", 
+          position: "left", 
+          stopOnFocus: false, 
+          style: {
+            background: "linear-gradient(to right, #5f0979, #00d4ff)",
+          },
+          onClick: function(){}
+        }).showToast();
+      }
+    }) 
+removeItem(producto)
+}
+//---------------------------------------Funcion Precio en carrito--------------------
+function renderPrecio(){
+  document.getElementById('mostrarPrecio');
+  let totalPrice = 0;
+      carrito.forEach((skin) => {
+          totalPrice += parseInt(skin.price);
+      });  
+      mostrarPrecio.innerHTML = ` 
+      <div class="text-dark h5 text-left mx-3">Valor total: 
+          <span class="text-success" id="sidecart-total">$${totalPrice}</span>
+      </div>`
+}
+//--------------------------------------Renderiza carrito------------------------------
+function renderizarCarrito(){
+  const contenedorCarrito = document.getElementById('carrito-contenedor');
+  carrito.forEach((element)=>{
+    let div = document.createElement('div')
+    
+    div.classList.add('productoEnCarrito')
+    div.classList.add(`eliminar${element.id}`)
+      div.innerHTML +=` <p><img src='${element.image}' width=40px height=40px class='mt-3'>
+                        <p class="m-0 d-flex align-items-center">${element.weapon} | ${element.name}</p>
+                        <p class="m-0 d-flex align-items-center">Precio: ${element.price}</p> 
+                        <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${element.id}></i>
+      `;      
+      contenedorCarrito.appendChild(div);
+      removeItem(element)
+  })
+}
+//------------------------------------Remueve item mediante Tacho-------------------
+function removeItem(producto){
+  const contenedorCarrito = document.getElementById('carrito-contenedor');
+  const eliminarTachoCarrito = document.getElementById(`eliminar${producto.id}`); //---------------------->Elimina unico item carrito
+    eliminarTachoCarrito.addEventListener('click',()=>{
+    
+    let tacho = document.getElementsByClassName(`eliminar${producto.id}`)
+
+
+      let productInCartIndex = carrito.map(e=>e.id).indexOf(producto.id);
+      carrito.splice(productInCartIndex,1)
+        Toastify({
+          text: `Se elimino ${producto.weapon} | ${producto.name} del carrito `,
+          duration: 2500,
+          newWindow: true,
+          close: false,
+          gravity: "top",
+          position: "left", 
+          stopOnFocus: false, 
+          style: {
+            background: "linear-gradient(to right, #5f0979, #00d4ff)",
+          },
+          onClick: function(){}
+        }).showToast();
+        contenedorCarrito.removeChild(tacho[0]);
+        localStorage.setItem("Carrito", JSON.stringify(carrito));
+        renderPrecio()
+    })
 }
 //--------------------------Consulta usuario mayor menor etc-----------------------------------//
-enviarOrdenados.addEventListener('click',orden) //-------> AZ-ZA-Mayor a menor-Menor a mayor Botones Y Filtro de Agente o arma
-function orden(){
+enviarOrdenados.addEventListener('click',()=>{
   const arrayObjetoOrdenados = stockSkins.slice(0);
   if(document.getElementById('AZ').checked){
     let objetoOrdenado = arrayObjetoOrdenados.sort((a, b) => //Muestra de A-Z
-        a.arma.localeCompare(b.arma));
+        a.weapon.localeCompare(b.weapon));
 
         renderizarCard(objetoOrdenado);
 
       }else if(document.getElementById('ZA').checked){
         let objetoOrdenado = arrayObjetoOrdenados.sort((a, b) =>//Muestra de Z-A
-          b.arma.localeCompare(a.arma));
+          b.weapon.localeCompare(a.weapon));
 
           renderizarCard(objetoOrdenado);
 
       }else if(document.getElementById('manorAMayor').checked){
         let objetoOrdenado = arrayObjetoOrdenados.sort(         //Muestra de menor a mayor de precio
-          (a, b) => a.precio - b.precio);
+          (a, b) => a.price - b.price);
 
           renderizarCard(objetoOrdenado);
 
       }else if(document.getElementById('mayorAMenor').checked){
         let objetoOrdenado = arrayObjetoOrdenados.sort(          //Muestra en Mayor a menor de precio
-         (a, b) => b.precio - a.precio);
+         (a, b) => b.price - a.price);
 
          renderizarCard(objetoOrdenado);
 
       } else if (document.getElementById('radioMuestraArma').checked) {
-        let filtro = stockSkins.filter((nombre) => nombre.arma !== "Agente");  // Muestra solo tipo de arma
+        let filtro = stockSkins.filter((name) => name.weapon !== "Agente");  // Muestra solo tipo de arma
         renderizarCard(filtro);
       } else if (document.getElementById('radioMuestraAgente').checked) {
-        let filtro = stockSkins.filter((nombre) => nombre.arma == "Agente");  //Muestra solo los agentes
+        let filtro = stockSkins.filter((name) => name.weapon == "Agente");  //Muestra solo los agentes
         renderizarCard(filtro);
       } else{
         Swal.fire({
@@ -295,23 +332,21 @@ function orden(){
           backdrop: `rgba(255,255,255,.25)`
         })
       }
-};
-
+})
 //--------------------------------Boton Reinicia---------------------------------------------
 
-reiniciar.addEventListener('click', ()=>{
+reiniciar.addEventListener('click', ()=>{  //-----Reinicia las cartas a como estaban cuando entras
   renderizarCard(stockSkins);
 })
-
 //------------------------Buscador-------------------------------------
 
 function buscadorUsuario() {
 
   let buscadorUsuario = buscadorBarra.value;
-  let buscador = stockSkins.filter((nombre) => nombre.arma == buscadorUsuario);
+  let buscador = stockSkins.filter((nombre) => nombre.weapon == buscadorUsuario);
   
   renderizarCard(buscador)
-  buscadorUsuario == '' && renderizarCard(stockSkins)
+  buscadorUsuario == '' && renderizarCard(stockSkins) //--Si no tiene nada se reinicia
   
 }
 buscadorBarra.addEventListener('input', buscadorUsuario) //----------> Buscador
@@ -335,25 +370,23 @@ userDisplay()
 let compraUsuarios = [{
 
 }]
-const terminarCompraFuncion = document.getElementById('formCompra');
+const terminarCompraFuncion = document.getElementById('terminarCompra');
 
 terminarCompraFuncion.addEventListener('click', ()=>{
-  
-(carritoDeCompra.length === 0) && (Swal.fire({
+(carrito.length == 0) && (Swal.fire({
   icon: 'error',
   title: 'El carrito esta vacio.',
   text: 'Agrega mas item para continuar.',
 }))
 
-if (carritoDeCompra.length >= 1){
+if (carrito.length >= 1){
   productoContenedor.innerHTML = ''
   seccionBotonesJS.innerHTML = ''
 
-
-  formCompra.innerHTML +=`
+  paginaTerminarCompra.innerHTML +=`
   <div class='container bg-white pt-2'> </a>
-    <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i>a</a>
-      <div class="pt-4 pb-5">
+    <a href="index.html" id="volverAtras" ><i class="fa-solid fa-arrow-left-long"></i></a>
+      <div class="pt-4 pb-4">
               <div class="container d-flex flex-column">
                 <div class="pt-3">
                   <div class="d-flex">
@@ -361,7 +394,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="nombreDelComprador" id="nombreDelComprador" placeholder="Tu nombre." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="nombreDelComprador" class='inputNombreComprador cajaTextoFinalizarCompra' placeholder="Tu nombre." >
                   </div>
                 </div>
                 <div class="pt-3">
@@ -370,7 +403,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="correoElectronicoDelComprador" id="correoElectronicoDelComprador" placeholder="ejemplo@mail.com" class="cajaTextoFinalizarCompra">
+                    <input type="text" name="correoElectronicoDelComprador" class="inputElecMain cajaTextoFinalizarCompra" placeholder="ejemplo@mail.com">
                   </div>
                 </div>
                 <div class="pt-3">
@@ -379,7 +412,7 @@ if (carritoDeCompra.length >= 1){
                     <span class="requiered">*</span>
                   </div>
                   <div class="d-flex justify-content-center">
-                    <input type="text" name="otroMedioContaDelComprador" id="otroMedioContaDelComprador" placeholder="Tu instagram, twitter, etc." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="otroMedioContaDelComprador" class="inputOtroMedioCont cajaTextoFinalizarCompra" placeholder="Tu instagram, twitter, etc." >
                   </div>
                 </div>
                 <div class="pt-3">
@@ -389,7 +422,7 @@ if (carritoDeCompra.length >= 1){
                     <a href="https://www.steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" class="ps-2">(?)</a>
                   </div>
                   <div class="pt-1 d-flex justify-content-center">
-                    <input type="text" name="compraUsuarioTradeLink" id="compraUsuarioTradeLink" placeholder="URL trade de steam." class="cajaTextoFinalizarCompra">
+                    <input type="text" name="compraUsuarioTradeLink" class="inputURLSteam cajaTextoFinalizarCompra" placeholder="URL trade de steam.">
                   </div>
                 </div>
                 <div class="pt-3 text-center">
@@ -405,43 +438,60 @@ if (carritoDeCompra.length >= 1){
   cerrarCarrito.click();
   finalCompra()
  }
-// (carritoDeCompra.length >= 1) && 
-// cerrarCarrito.click();
+(carrito.length >= 1) && 
+cerrarCarrito.click();
   
   //location.href="./compra.html";
 })
-
+//--------------------------------------------Finalizar Compra
 function finalCompra(){
   const enviarCompra = document.getElementById('enviarCompra')
-  enviarCompra.addEventListener('click',()=>{
-    let nombreDelComprador = document.getElementById('nombreDelComprador').value;
-    let compraUsuarioTradeLink = document.getElementById('compraUsuarioTradeLink').value;
-    let correoElectronicoDelComprador =document.getElementById('correoElectronicoDelComprador').value;
-    let otroMedioContaDelComprador = document.getElementById('otroMedioContaDelComprador').value;
+  enviarCompra.addEventListener('click',(event)=>{
+    event.preventDefault();
+    
 
-  
-    if((compraUsuarioTradeLink == '')||(nombreDelComprador == '')||(otroMedioContaDelComprador == '')||(correoElectronicoDelComprador == '')){
+    
+    const nombreComprador = document.querySelector('.inputNombreComprador'),
+          otroMedioContaDelComprador = document.querySelector('.inputElecMain'),
+          correoElecComprador = document.querySelector('.inputOtroMedioCont'),
+          compraUsuarioTradeLink = document.querySelector('.inputURLSteam');
+    
+    const compraUser= {
+      nombre: nombreComprador.value,
+      UserOtroMedio: otroMedioContaDelComprador.value,
+      CorreoElectronico: correoElecComprador.value,
+      SteamURL: compraUsuarioTradeLink.value,
+    };
+
+    if((compraUsuarioTradeLink === '')||(nombreComprador == '')||(otroMedioContaDelComprador == '')||(correoElecComprador == '')){
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Rellena todos los campos para continuar',
         backdrop: `rgba(255,255,255,.25)`
     })
-    }else{
-      Swal.fire({
-        icon: 'success',
-        title: 'Gracias!',
-        text: 'En los proximos dias te llegara una notificacion!',
-        backdrop: `rgba(255,255,255,.25)`
-    })
-  }
+      }else{
+        Swal.fire({
+          title: '¿Deseas guardar los datos de la tarjeta?',
+          showCancelButton: true,
+          position: 'center',
+          width: 400,
+          confirmButtonText: 'Guardar',
+      }).then((result)=>{
+          if(result.isConfirmed){
+              localStorage.removeItem('Carrito') 
+              localStorage.setItem('compraUser', JSON.stringify(compraUser));
+              Swal.fire('Datos guardados', '', 'success');
+              setTimeout(() => {
+                  location.reload();
+              }, 2000);
+          }else if(result.dismiss === Swal.DismissReason.cancel){
+              Swal.fire('Los datos no se guardaron');
+              setTimeout(() => {
+                  location.reload();
+              }, 2000);
+          }
+      })
+    }
  })
 }
-//----------------------------------------Carrito de compra al tirar F5 queda guardado--------------------------
-const renderizarLocalStorage = ()=> {
-  Object.values(localStorage).forEach(elements =>{
-    carritoIndex(JSON.parse(elements).id);
-    //carritoDeCompra.push(JSON.parse(elements));
-  })
-}
-renderizarLocalStorage();
