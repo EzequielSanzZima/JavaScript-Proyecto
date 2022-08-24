@@ -26,17 +26,22 @@ const usuario =
   user: 'wasSd',
   photoProfile: "./img/usuario/usuario1.jpg"
  }
-let carrito = JSON.parse(localStorage.getItem("stockSkins")) || [];
+//----------------------LocalStorage------------------------------
+let carrito = JSON.parse(localStorage.getItem("Carrito")) || [];
 const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
+
+renderizarCarrito();
 //----------------------------------Funcion Cargar Fetch--------------------------
+
 (async()=>{
   try{
     const response = await fetch("product.json")
     const data = await response.json();
     localStorage.setItem("stock", JSON.stringify(data))
+    renderPrecio();
   } catch (error){
     swal.fire({
-      title: '¡ERROR 404!',
+      title: '¡ERROR!',
       text: 'Algo salió mal. Inténtalo de nuevo más tarde',
       icon: 'error',
       confirm: 'Ok',
@@ -44,7 +49,8 @@ const guardarLocal = (clave, valor) => { localStorage.setItem(clave, valor)};
   })
  }
 })()
-let stockSkins = JSON.parse(localStorage.getItem("stock"))
+
+let stockSkins = JSON.parse(localStorage.getItem("stock")) //----------------> pasa de JSON a array en js
 //----------------------------------Crear botones------------------------------------------//
 const seccionBotonesJS = document.getElementById('botones')
 verBotones = () => {
@@ -145,6 +151,7 @@ function renderizarCard (skinArray){
         botonCompra(skin);
     })
 }
+
 //------------------------------------Funcion de compra con los botones-----------------------
 function botonCompra (skin){
   const boton = document.getElementById(`boton${skin.id}`);
@@ -163,104 +170,127 @@ function botonCompra (skin){
       },
       onClick: function(){}
     }).showToast();
-    carritoIndex(skin.id)
+    renderCarritoProductos(skin.id)
   } )
 }
 //----------------------------------------Agregar al carrito + Carrito---------------------------------
 
-const carritoIndex = (productoId) =>{
-  const renderCarritoProductos = () => {
+// const carritoIndex = (productoId) =>{ 
+//       renderCarritoProductos()
+// }
+const renderCarritoProductos = (productoId) => {
 
-    let producto = stockSkins.find(elemento => elemento.id == productoId);
-      carrito.push(producto);
-      //stockSkins.splice(producto.id, 1);
-      guardarLocal(producto.id, JSON.stringify(producto))
+  let producto = stockSkins.find(elemento => elemento.id == productoId);
+    carrito.push(producto);
+    localStorage.setItem("Carrito", JSON.stringify(carrito));
 
-      renderizarCard(stockSkins)
+    renderizarCard(stockSkins)
 
 //Muestra item en el modal del carrito
-      const contenedorCarrito = document.getElementById('carrito-contenedor');
-      let div = document.createElement('div')
-      div.classList.add('productoEnCarrito')
-        div.innerHTML +=` <p><img src='${producto.image}' width=40px height=40px class='mt-3'>
-                          <p class="m-0 d-flex align-items-center">${producto.weapon} | ${producto.name}</p>
-                          <p class="m-0 d-flex align-items-center">Precio: ${producto.price}</p> 
-                          <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${producto.id}></i>
-        `;      
-        contenedorCarrito.appendChild(div);
-        document.getElementById('mostrarPrecio');
-        let totalPrice = 0;
-        carrito.forEach((skin) => {
-            totalPrice += parseFloat(skin.price);
-        });  
-        mostrarPrecio.innerHTML = ` 
-        <div class="text-dark h5 text-left mx-3">Valor total: 
-            <span class="text-success" id="sidecart-total">$${totalPrice}</span>
-        </div>`
+    const contenedorCarrito = document.getElementById('carrito-contenedor');
+    let div = document.createElement('div')
+    div.classList.add('productoEnCarrito')
+    div.classList.add(`eliminar${producto.id}`)
+      div.innerHTML +=` <p><img src='${producto.image}' width=40px height=40px class='mt-3'>
+                        <p class="m-0 d-flex align-items-center">${producto.weapon} | ${producto.name}</p>
+                        <p class="m-0 d-flex align-items-center">Precio: ${producto.price}</p> 
+                        <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${producto.id}></i>
+      `;      
+      contenedorCarrito.appendChild(div);
+
+//Muestra precio
+renderPrecio()
 
 //----------Eliminar todo el carrito
-      eliminarItemsTodoCarrito.addEventListener('click', () =>{
-        if(carrito.length != 1){
-          for(let i=0; i<carrito.length; i++){                
-            localStorage.removeItem(producto.id)    
-          }
-          Swal.fire({
-            icon: 'success',
-            title: 'Se han removido los item, se va a refrescar la pagina.',
-            showConfirmButton: false,
-            timer: 2450
-          })
-          setTimeout(function(){
-            window.location.reload();
-         }, 2500);  
-        }
-        (carrito.length==1)&&
-          Toastify({
-            text: `El carrito esta vacio no se puede vaciar.`,
-            duration: 2500,
-            newWindow: true,
-            close: false,
-            gravity: "top", 
-            position: "left", 
-            stopOnFocus: false, 
-            style: {
-              background: "linear-gradient(to right, #5f0979, #00d4ff)",
-            },
-            onClick: function(){}
-          }).showToast();
+    eliminarItemsTodoCarrito.addEventListener('click', () =>{
+      if(carrito.length > 0){              
+          localStorage.removeItem('Carrito')   
+        Swal.fire({
+          icon: 'success',
+          title: 'Se han removido los item, se va a refrescar la pagina.',
+          showConfirmButton: false,
+          timer: 2450
         })
-      
-//----------Eliminar un unico item del carrito
-    const eliminarTachoCarrito = document.getElementById(`eliminar${producto.id}`); //---------------------->Elimina unico item carrito
-      eliminarTachoCarrito.addEventListener('click',()=>{
-        localStorage.removeItem(producto.id)
-          Toastify({
-            text: `Se elimino ${producto.weapon} | ${producto.name} del carrito `,
-            duration: 2500,
-            newWindow: true,
-            close: false,
-            gravity: "top",
-            position: "left", 
-            stopOnFocus: false, 
-            style: {
-              background: "linear-gradient(to right, #5f0979, #00d4ff)",
-            },
-            onClick: function(){}
-          }).showToast();
-          contenedorCarrito.removeChild(div);
-      }) 
-  } 
-
-      renderCarritoProductos()
-      //renderTotalPrice()
-
+        setTimeout(function(){
+          window.location.reload();
+       }, 2500);  
+      }else{
+        console.log('asd')
+        Toastify({
+          text: `El carrito esta vacio no se puede vaciar.`,
+          duration: 2500,
+          newWindow: true,
+          close: false,
+          gravity: "top", 
+          position: "left", 
+          stopOnFocus: false, 
+          style: {
+            background: "linear-gradient(to right, #5f0979, #00d4ff)",
+          },
+          onClick: function(){}
+        }).showToast();
+      }
+    }) 
+removeItem(producto)
 }
-
-function showPrice(){
-
+//---------------------------------------Funcion Precio en carrito--------------------
+function renderPrecio(){
+  document.getElementById('mostrarPrecio');
+  let totalPrice = 0;
+      carrito.forEach((skin) => {
+          totalPrice += parseInt(skin.price);
+      });  
+      mostrarPrecio.innerHTML = ` 
+      <div class="text-dark h5 text-left mx-3">Valor total: 
+          <span class="text-success" id="sidecart-total">$${totalPrice}</span>
+      </div>`
 }
+//--------------------------------------Renderiza carrito------------------------------
+function renderizarCarrito(){
+  const contenedorCarrito = document.getElementById('carrito-contenedor');
+  carrito.forEach((element)=>{
+    let div = document.createElement('div')
+    
+    div.classList.add('productoEnCarrito')
+    div.classList.add(`eliminar${element.id}`)
+      div.innerHTML +=` <p><img src='${element.image}' width=40px height=40px class='mt-3'>
+                        <p class="m-0 d-flex align-items-center">${element.weapon} | ${element.name}</p>
+                        <p class="m-0 d-flex align-items-center">Precio: ${element.price}</p> 
+                        <i class="fa-solid fa-trash-can d-flex align-items-center"id=eliminar${element.id}></i>
+      `;      
+      contenedorCarrito.appendChild(div);
+      removeItem(element)
+  })
+}
+//------------------------------------Remueve item mediante Tacho-------------------
+function removeItem(producto){
+  const contenedorCarrito = document.getElementById('carrito-contenedor');
+  const eliminarTachoCarrito = document.getElementById(`eliminar${producto.id}`); //---------------------->Elimina unico item carrito
+    eliminarTachoCarrito.addEventListener('click',()=>{
+    
+    let tacho = document.getElementsByClassName(`eliminar${producto.id}`)
 
 
+      let productInCartIndex = carrito.map(e=>e.id).indexOf(producto.id);
+      carrito.splice(productInCartIndex,1)
+        Toastify({
+          text: `Se elimino ${producto.weapon} | ${producto.name} del carrito `,
+          duration: 2500,
+          newWindow: true,
+          close: false,
+          gravity: "top",
+          position: "left", 
+          stopOnFocus: false, 
+          style: {
+            background: "linear-gradient(to right, #5f0979, #00d4ff)",
+          },
+          onClick: function(){}
+        }).showToast();
+        contenedorCarrito.removeChild(tacho[0]);
+        localStorage.setItem("Carrito", JSON.stringify(carrito));
+        renderPrecio()
+    })
+}
 //--------------------------Consulta usuario mayor menor etc-----------------------------------//
 enviarOrdenados.addEventListener('click',()=>{
   const arrayObjetoOrdenados = stockSkins.slice(0);
@@ -343,13 +373,13 @@ let compraUsuarios = [{
 const terminarCompraFuncion = document.getElementById('terminarCompra');
 
 terminarCompraFuncion.addEventListener('click', ()=>{
-(carrito.length == 1) && (Swal.fire({
+(carrito.length == 0) && (Swal.fire({
   icon: 'error',
   title: 'El carrito esta vacio.',
   text: 'Agrega mas item para continuar.',
 }))
 
-if (carrito.length >= 2){
+if (carrito.length >= 1){
   productoContenedor.innerHTML = ''
   seccionBotonesJS.innerHTML = ''
 
@@ -413,13 +443,13 @@ cerrarCarrito.click();
   
   //location.href="./compra.html";
 })
-
+//--------------------------------------------Finalizar Compra
 function finalCompra(){
   const enviarCompra = document.getElementById('enviarCompra')
   enviarCompra.addEventListener('click',(event)=>{
     event.preventDefault();
     
-    //----Finalizar Compra
+
     
     const nombreComprador = document.querySelector('.inputNombreComprador'),
           otroMedioContaDelComprador = document.querySelector('.inputElecMain'),
@@ -433,44 +463,35 @@ function finalCompra(){
       SteamURL: compraUsuarioTradeLink.value,
     };
 
-    if((compraUsuarioTradeLink == '')||(nombreComprador == '')||(otroMedioContaDelComprador == '')||(correoElecComprador == '')){
+    if((compraUsuarioTradeLink === '')||(nombreComprador == '')||(otroMedioContaDelComprador == '')||(correoElecComprador == '')){
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Rellena todos los campos para continuar',
         backdrop: `rgba(255,255,255,.25)`
     })
-  }else{
-    Swal.fire({
-      title: '¿Deseas guardar los datos de la tarjeta?',
-      showCancelButton: true,
-      position: 'center',
-      width: 400,
-      confirmButtonText: 'Guardar',
-  }).then((result)=>{
-      if(result.isConfirmed){
-          localStorage.setItem('compraUser', JSON.stringify(compraUser));
-          Swal.fire('Datos guardados', '', 'success');
-          setTimeout(() => {
-              location.reload();
-          }, 2000);
-      }else if(result.dismiss === Swal.DismissReason.cancel){
-          Swal.fire('Los datos no se guardaron');
-          setTimeout(() => {
-              location.reload();
-          }, 2000);
-      }
-  })
-  }
-
-
+      }else{
+        Swal.fire({
+          title: '¿Deseas guardar los datos de la tarjeta?',
+          showCancelButton: true,
+          position: 'center',
+          width: 400,
+          confirmButtonText: 'Guardar',
+      }).then((result)=>{
+          if(result.isConfirmed){
+              localStorage.removeItem('Carrito') 
+              localStorage.setItem('compraUser', JSON.stringify(compraUser));
+              Swal.fire('Datos guardados', '', 'success');
+              setTimeout(() => {
+                  location.reload();
+              }, 2000);
+          }else if(result.dismiss === Swal.DismissReason.cancel){
+              Swal.fire('Los datos no se guardaron');
+              setTimeout(() => {
+                  location.reload();
+              }, 2000);
+          }
+      })
+    }
  })
 }
-//----------------------------------------Carrito de compra al tirar F5 queda guardado--------------------------
-const renderizarLocalStorage = ()=> {
-  Object.values(localStorage).forEach(elements =>{
-    carritoIndex(JSON.parse(elements).id);
-    //carritoDeCompra.push(JSON.parse(elements));
-  })
-}
-renderizarLocalStorage();
