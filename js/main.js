@@ -368,7 +368,6 @@ function userDisplay(){
 userDisplay()
 //----------------------------------------Compra Completada----------------------------------------------------
 let compraUsuarios = [{
-
 }]
 const terminarCompraFuncion = document.getElementById('terminarCompra');
 
@@ -449,8 +448,6 @@ function finalCompra(){
   enviarCompra.addEventListener('click',(event)=>{
     event.preventDefault();
     
-
-    
     const nombreComprador = document.querySelector('.inputNombreComprador'),
           otroMedioContaDelComprador = document.querySelector('.inputElecMain'),
           correoElecComprador = document.querySelector('.inputOtroMedioCont'),
@@ -463,7 +460,7 @@ function finalCompra(){
       SteamURL: compraUsuarioTradeLink.value,
     };
 
-    if((compraUsuarioTradeLink === '')||(nombreComprador == '')||(otroMedioContaDelComprador == '')||(correoElecComprador == '')){
+    if((compraUsuarioTradeLink == '')||(nombreComprador == '')||(otroMedioContaDelComprador == '')||(correoElecComprador == '')){
       Swal.fire({
         icon: 'error',
         title: 'Error',
